@@ -22,7 +22,7 @@ export const convertEntryAsFilePathFormat = (entry: Entry, removeQueryString: bo
     const requestURL = entry.request.url;
     const stripSchemaURL: string = humanizeUrl(removeQueryString ? requestURL.split("?")[0] : requestURL);
     const dirnames: string[] = stripSchemaURL.split("/").map((pathname) => {
-        return filenamify(pathname, {maxLength: 255});
+        return filenamify(pathname, { maxLength: 255 });
     });
     const fileName = dirnames[dirnames.length - 1];
     if (
@@ -50,14 +50,16 @@ export const extract = (harContent: Har, options: ExtractOptions) => {
             return;
         }
         const outputPath = path.join(options.outputDir, convertEntryAsFilePathFormat(entry, options.removeQueryString));
-        if (!options.dryRun) {
-            makeDir.sync(path.dirname(outputPath));
-        }
-        if (options.verbose) {
-            console.log(outputPath);
-        }
-        if (!options.dryRun) {
-            fs.writeFileSync(outputPath, buffer);
-        }
+        try {
+            if (!options.dryRun) {
+                makeDir.sync(path.dirname(outputPath));
+            }
+            if (options.verbose) {
+                console.log(outputPath);
+            }
+            if (!options.dryRun) {
+                fs.writeFileSync(outputPath, buffer);
+            }
+        } catch (e) {}
     });
 };
